@@ -1,50 +1,42 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import Depends, FastAPI
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from .database import SessionLocal, engine, get_database
-from .exceptions import NotFoundException
-from .models import Base, User
+from ..database import get_database
+from ..exceptions import NotFoundException
+from ..models import User
+from .schemas import CreateUser
 
 SECRET_KEY = "lhgGHo7t8O7Ff68OF688o68O6F6fF68O"
-ALGORITHM = "HS256"
+ALGORITHM = "HS256"  # TODO - This must be part of some settings
 
 oauth_bearer = OAuth2PasswordBearer(tokenUrl="token")
 
 
-class CreateUser(BaseModel):
-    username: str
-    email: Optional[str]
-    firstname: str
-    lastname: str
-    password: str
-
-
-app = FastAPI()
-bcript_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+router = APIRouter(prefix="", tags=["auth"])
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_password_hash(password: str):
-    return bcript_context.hash(password)
+    return bcrypt_context.hash(password)
 
 
 def verify_password(plain_password, hashed_password):
-    return bcript_context.verify(plain_password, hashed_password)
+    return bcrypt_context.verify(plain_password, hashed_password)
 
 
 def authenticate_user(username: str, password: str, db):
     user: User = db.query(User).filter(User.username == username).first()
 
     if not user:
-        return False
+        return None
     if not verify_password(password, user.password):
-        return False
+        return None
     return user
 
 
@@ -72,7 +64,7 @@ async def get_current_user(token: str = Depends(oauth_bearer)):
         raise NotFoundException from exc
 
 
-@app.post("/create/user", status_code=201)
+@router.post("/create/user", status_code=201)
 async def create_new_user(user: CreateUser, db: Session = Depends(get_database)):
     user_model = User(**user.dict())
     user_model.password = get_password_hash(user_model.password)
@@ -82,7 +74,7 @@ async def create_new_user(user: CreateUser, db: Session = Depends(get_database))
     return {}
 
 
-@app.post("/token")
+@router.post("/token")
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_database)
 ):
