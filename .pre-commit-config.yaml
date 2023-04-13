@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        additional_dependencies: ["pyproject"]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+    - id: flake8
+  - repo: local
+    hooks:
+      - id: unittest
+        name: unittest
+        language: system
+        entry: bash -c 'cd code && poetry run python -m unittest discover -v -s tests'
+        args: ['-p "*_test.py"']
+        pass_filenames: false
+  - repo: https://github.com/ambv/black
+    rev: 22.10.0
+    hooks:
+    - id: black
+      additional_dependencies: ["pyproject"]
+      args: [--line-length=115]
+      language_version: python3.10

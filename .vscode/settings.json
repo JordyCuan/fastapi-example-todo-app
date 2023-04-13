@@ -60,6 +60,12 @@
         "--max-line-length=115",
         "--ignore=E402,F401,E302,E305,E501",
     ],
+    "isort.args": [
+        "--profile",
+        "black",
+        "-l",
+        "115"
+    ],
     "python.linting.enabled": true,
     // "python.linting.pydocstyleEnabled": true,
     "python.linting.mypyEnabled": true,
