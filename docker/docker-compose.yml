@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  db:
+    build: ./db
+    container_name: todos-db
+    image: todos-db:1.0
+    env_file:
+      - ./db/.env
+    networks:
+      todos-network:
+        aliases:
+          - db
+    ports:
+      # - "40000:3306"
+      # - "40001:33060"
+      - "8001:5432"
+    volumes:
+      - type: volume
+        source: todos-db-volume
+        target: /data/postgres
+    # healthcheck:
+    #   test: ["CMD", "postgresadmin", "ping", "-h", "localhost"]
+    #   interval: 5s
+    #   start_period: 10s
+    #   timeout: 4s
+    #   retries: 3
+
+networks:
+  todos-network:
+    name: todos-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 170.10.10.0/24
+
+volumes:
+  todos-db-volume:
+    name: todos-db-volume
