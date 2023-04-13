@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "todo3"
+version = "0.1.0"
+description = ""
+authors = ["Jordy Cuan <jcuan4@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.95.0"
+uvicorn = "^0.21.1"
+sqlalchemy = "^2.0.9"
+passlib = "^1.7.4"
+bcrypt = "^4.0.1"
+python-multipart = "^0.0.6"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+
+
+[tool.poetry.group.dev.dependencies]
+pycodestyle = "^2.10.0"
+bandit = "^1.7.5"
+black = "^23.3.0"
+mypy = "^1.2.0"
+pre-commit = "^3.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
